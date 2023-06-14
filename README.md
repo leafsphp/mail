@@ -64,7 +64,7 @@ mailer()
   ->create([
     'subject' => 'Leaf Mail Test',
     'body' => 'This is a test mail from Leaf Mail using gmail',
-    
+
     // next couple of lines can be skipped if you
     // set defaults in the Mailer config
     'recipientEmail' => 'name@mail.com',
@@ -74,5 +74,3 @@ mailer()
   ])
   ->send();
 ```
-
-**v2 is still WIP, we aim to release it soon. You can still use it by running `composer require leafs/leaf:dev-next`**
