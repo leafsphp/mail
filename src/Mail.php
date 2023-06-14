@@ -2,27 +2,47 @@
 
 namespace Leaf;
 
+use Leaf\Mail\Mailer;
+
 class Mail
 {
-    public function __construct()
+    /**@var array */
+    protected $mail = [];
+
+    public function __construct($mail = null)
     {
-        // 
+        $this->mail = $mail;
+    }
+
+    public static function create($mail)
+    {
+        return new static($mail);
     }
 
     public function getMail()
     {
         return [
-            'subject' => 'Leaf Mail',
-            'isHtml' => true,
-            'body' => 'This is a test mail from Leaf Mail',
-            'altBody' => 'This is a test mail from Leaf Mail',
-            'recepientName' => 'Mike',
-            'recepientEmail' => 'mickdd22@gmail.com',
-            'senderName' => 'Mychi',
-            'senderEmail' => 'mychi.darko@gmail.com',
-            'attachment' => '',
-            'cc' => '',
-            'bcc' => '',
+            'subject' => $this->mail['subject'],
+            'isHtml' => $this->mail['isHtml'] ?? true,
+            'body' => $this->mail['body'],
+            'altBody' => $this->mail['altBody'] ?? $this->mail['body'],
+            'recipientName' => $this->mail['recipientName'] ?? null,
+            'recipientEmail' => $this->mail['recipientEmail'] ?? null,
+            'senderName' => $this->mail['senderName'] ?? null,
+            'senderEmail' => $this->mail['senderEmail'] ?? null,
+            'replyToName' => $this->mail['replyToName'] ?? null,
+            'replyToEmail' => $this->mail['replyToEmail'] ?? null,
+            'attachment' => $this->mail['attachment'] ?? '',
+            'cc' => $this->mail['cc'] ?? '',
+            'bcc' => $this->mail['bcc'] ?? '',
         ];
+    }
+
+    /**
+     * Send your crafted email
+     */
+    public function send()
+    {
+        return Mailer::send($this);
     }
 }
