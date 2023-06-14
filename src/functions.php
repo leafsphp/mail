@@ -1,14 +1,16 @@
 <?php
 
-if (!function_exists('email')) {
+if (!function_exists('mailer')) {
     /**
-     * Mailer
+     * Create and send an email
+     * 
+     * *Note that `\Leaf\Mail\Mailer` should be configured*
      * 
      * @param array $mail
      * 
-     * @return \Leaf\Mail|\Leaf\Mail\Mailer
+     * @return \Leaf\Mail
      */
-    function email($mail = null)
+    function mailer($mail = null)
     {
         return new \Leaf\Mail($mail);
     }
