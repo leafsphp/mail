@@ -3,6 +3,7 @@
 namespace Leaf\Mail;
 
 use Leaf\Mail;
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\OAuth;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -16,6 +17,11 @@ class Mailer
     protected static $mailer;
 
     protected static $auth = 'SMTP';
+
+    /**
+     * Errors
+     */
+    protected static $errors = [];
 
     public static function useOAuth(OAuth $oauth)
     {
@@ -166,10 +172,32 @@ class Mailer
             }
 
             try {
-                return static::$mailer->send();
-            } catch (\Throwable $th) {
-                echo $th->getMessage();
+                ob_start();
+                $res = static::$mailer->send();
+                $debug = ob_get_clean();
+
+                if (!$res) {
+                    static::$errors[] = static::$mailer->ErrorInfo;
+                }
+
+                if (!empty($debug) && (static::$config['debug'] ?? false)) {
+                    $res = $debug;
+                }
+
+                return $res;
+            } catch (Exception $e) {
+                static::$errors[] = $e->getMessage();
+            } catch (\Exception $e) {
+                static::$errors[] = $e->getMessage();
             }
         }
+    }
+
+    /**
+     * Return all errors
+     */
+    public static function errors()
+    {
+        return static::$errors;
     }
 }
