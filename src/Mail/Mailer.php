@@ -7,7 +7,7 @@ use PHPMailer\PHPMailer\OAuth;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
-class Mailer 
+class Mailer
 {
     /**@var array */
     protected static $config = [];
@@ -30,31 +30,42 @@ class Mailer
     /**
      * SMTP Connection
      */
-    public static function connect($host, $port, $auth = [], $security = 'STARTTLS')
+    public static function connect($connection)
     {
         if (!static::$mailer) {
             static::$mailer = new PHPMailer();
         }
 
         static::$mailer->isSMTP();
-        static::$mailer->Host = $host;
-        static::$mailer->Port = $port;
+        static::$mailer->Host = $connection['host'];
+        static::$mailer->Port = $connection['port'];
 
-        if ($auth === false) {
+        if (isset($connection['keepAlive']) || isset(static::$config['keepAlive'])) {
+            static::$mailer->SMTPKeepAlive = $connection['keepAlive'] ?? static::$config['keepAlive'];
+        }
+
+        if (!isset($connection['auth']) || $connection['auth'] === false) {
             static::$mailer->SMTPAuth = false;
         } else {
             static::$mailer->SMTPAuth = true;
 
-            if (isset($auth['username']) && isset($auth['password'])) {
-                static::$mailer->Username = $auth['username'];
-                static::$mailer->Password = $auth['password'];
+            if ($connection['auth'] instanceof OAuth) {
+                static::useOAuth($connection['auth']);
+            } else {
+                if (isset($connection['auth']['username'])) {
+                    static::$mailer->Username = $connection['auth']['username'];
+                }
+
+                if (isset($connection['auth']['password'])) {
+                    static::$mailer->Password = $connection['auth']['password'];
+                }
             }
         }
 
-        if ($security === 'STARTTLS') {
+        if (!isset($connection['security']) || $connection['security'] === 'STARTTLS') {
             static::$mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         } else {
-            static::$mailer->SMTPSecure = $security;
+            static::$mailer->SMTPSecure = $connection['security'];
         }
     }
 
@@ -71,20 +82,20 @@ class Mailer
     {
         $mail = $mail->getMail();
 
-        if (empty($mail['recepientEmail'])) {
-            throw new \Exception('Recepient email is required');
+        if (empty($mail['recipientEmail']) && empty(static::$config['defaults']['recipientEmail'] ?? '')) {
+            throw new \Exception('recipient email is required');
         }
 
-        if (empty($mail['senderEmail'])) {
+        if (empty($mail['senderEmail']) && empty(static::$config['defaults']['senderEmail'] ?? '')) {
             throw new \Exception('Sender email is required');
         }
 
-        if (empty($mail['senderName'])) {
+        if (empty($mail['senderName']) && empty(static::$config['defaults']['senderName'] ?? '')) {
             throw new \Exception('Sender name is required');
         }
 
-        if (empty($mail['recepientName'])) {
-            throw new \Exception('Recepient name is required');
+        if (empty($mail['recipientName']) && empty(static::$config['defaults']['recipientName'] ?? '')) {
+            throw new \Exception('recipient name is required');
         }
 
         if (empty($mail['subject'])) {
@@ -116,11 +127,34 @@ class Mailer
             static::$mailer->isHTML($mail['isHtml'] ?? true);
             static::$mailer->Body = $mail['body'];
             static::$mailer->AltBody = $mail['altBody'] ?? '';
-            static::$mailer->addAddress($mail['recepientEmail'], $mail['recepientName']);
-            static::$mailer->setFrom($mail['senderEmail'], $mail['senderName']);
 
-            if (!empty($mail['attachment'])) {
-                static::$mailer->addAttachment($mail['attachment']);
+            static::$mailer->addAddress(
+                $mail['recipientEmail'] ?? static::$config['defaults']['recipientEmail'] ?? '',
+                $mail['recipientName'] ?? static::$config['defaults']['recipientName'] ?? ''
+            );
+
+            static::$mailer->setFrom(
+                $mail['senderEmail'] ?? static::$config['defaults']['senderEmail'] ?? '',
+                $mail['senderName'] ?? static::$config['defaults']['senderName'] ?? ''
+            );
+
+            if (!empty($mail['replyToEmail']) && !empty(static::$config['defaults']['replyToEmail'] ?? '')) {
+                static::$mailer->addReplyTo(
+                    $mail['replyToEmail'] ?? static::$config['defaults']['replyToEmail'] ?? '',
+                    $mail['replyToName'] ?? static::$config['defaults']['replyToName'] ?? ''
+                );
+            }
+
+            if (!empty($mail['attachments'])) {
+                foreach ($mail['attachments'] as $attachment) {
+                    static::$mailer->addAttachment(
+                        $attachment['path'],
+                        $attachment['name'],
+                        $attachment['encoding'],
+                        $attachment['type'],
+                        $attachment['disposition']
+                    );
+                }
             }
 
             if (!empty($mail['cc'])) {
