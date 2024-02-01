@@ -49,6 +49,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 Mailer::connect([
   'host' => 'smtp.mailtrap.io',
   'port' => 2525,
+  'charSet' => 'utf-8',
   'security' => PHPMailer::ENCRYPTION_STARTTLS,
   'auth' => [
     'username' => 'MAILTRAP_USERNAME',

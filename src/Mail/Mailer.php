@@ -46,6 +46,10 @@ class Mailer
         static::$mailer->Host = $connection['host'];
         static::$mailer->Port = $connection['port'];
 
+        if (isset($connection['charSet'])) {
+            static::$mailer->CharSet = $connection['charSet'];
+        }
+
         if (isset($connection['keepAlive']) || isset(static::$config['keepAlive'])) {
             static::$mailer->SMTPKeepAlive = $connection['keepAlive'] ?? static::$config['keepAlive'];
         }
