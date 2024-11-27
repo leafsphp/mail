@@ -124,10 +124,12 @@ class Mailer
      */
     public static function send(Mail $mail)
     {
-        if (static::$config['debug'] === "SERVER") {
+        $debug = static::$config['debug'] ?? SMTP::DEBUG_OFF;
+
+        if ($debug === "SERVER") {
             static::$mailer->SMTPDebug = SMTP::DEBUG_SERVER;
         } else {
-            static::$mailer->SMTPDebug = static::$config['debug'] ?? SMTP::DEBUG_OFF;
+            static::$mailer->SMTPDebug = $debug;
         }
 
         if (static::validate($mail)) {
