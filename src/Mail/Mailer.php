@@ -77,6 +77,14 @@ class Mailer
         } else {
             static::$mailer->SMTPSecure = $connection['security'];
         }
+
+        if (isset($connection['defaults'])) {
+            static::$config['defaults'] = $connection['defaults'];
+        }
+
+        if (isset($connection['debug'])) {
+            static::$config['debug'] = $connection['debug'];
+        }
     }
 
     public static function config($config = [])

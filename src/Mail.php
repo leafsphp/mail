@@ -15,6 +15,22 @@ class Mail
         $this->mail = $mail;
     }
 
+    /**
+     * Connect to your mail server
+     *
+     * @param array $connection Connection details
+     */
+    public function connect($connection)
+    {
+        Mailer::connect($connection);
+    }
+
+    /**
+     * Create a new mail instance
+     *
+     * @param mixed $mail
+     * @return static
+     */
     public static function create($mail)
     {
         return new static($mail);
@@ -41,7 +57,7 @@ class Mail
 
     /**
      * Add attachments to your mail from your file system
-     * 
+     *
      * @throws Exception
      * @return Mail
      */
