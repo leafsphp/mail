@@ -198,6 +198,10 @@ class Mailer
                     $res = $debug;
                 }
 
+                // reset mailer so it does not carry over to the next mail
+                static::$mailer->clearAddresses();
+                static::$mailer->clearAttachments();
+
                 return $res;
             } catch (Exception $e) {
                 static::$errors[] = $e->getMessage();
