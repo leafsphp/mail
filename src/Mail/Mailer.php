@@ -148,10 +148,31 @@ class Mailer
             static::$mailer->Body = $mail['body'];
             static::$mailer->AltBody = $mail['altBody'] ?? '';
 
-            static::$mailer->addAddress(
-                $mail['recipientEmail'] ?? static::$config['defaults']['recipientEmail'] ?? '',
-                $mail['recipientName'] ?? static::$config['defaults']['recipientName'] ?? ''
-            );
+            if (empty($mail['recipientEmail'])) {
+                $mail['recipientEmail'] = static::$config['defaults']['recipientEmail'] ?? '';
+            }
+
+            if (\is_string($mail['recipientEmail'])) {
+                static::$mailer->addAddress(
+                    $mail['recipientEmail'] ?? static::$config['defaults']['recipientEmail'] ?? '',
+                    $mail['recipientName'] ?? static::$config['defaults']['recipientName'] ?? ''
+                );
+            } else {
+                foreach ($mail['recipientEmail'] as $index => $email) {
+                    $name = '';
+
+                    if (is_array($mail['recipientName']) && isset($mail['recipientName'][$index])) {
+                        $name = $mail['recipientName'][$index];
+                    } elseif (is_string($mail['recipientName'])) {
+                        $name = $mail['recipientName'];
+                    }
+
+                    static::$mailer->addAddress(
+                        $email,
+                        $name
+                    );
+                }
+            }
 
             static::$mailer->setFrom(
                 $mail['senderEmail'] ?? static::$config['defaults']['senderEmail'] ?? '',
@@ -197,10 +218,6 @@ class Mailer
                 if (!empty($debug) && (static::$config['debug'] ?? false)) {
                     $res = $debug;
                 }
-
-                // reset mailer so it does not carry over to the next mail
-                static::$mailer->clearAddresses();
-                static::$mailer->clearAttachments();
 
                 return $res;
             } catch (Exception $e) {
