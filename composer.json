@@ -1,15 +1,16 @@
 {
     "name": "leafs/mail",
-    "description": "Leaf PHP bareui templating engine",
+    "description": "Simple, straightforward mailing for your Leaf apps",
     "keywords": [
-        "template",
-        "simple templating",
-        "view",
+        "mail",
+        "smtp",
+        "email",
+        "phpmailer",
         "leaf",
         "php",
         "framework"
     ],
-    "homepage": "https://leafphp.netlify.app/#/",
+    "homepage": "https://leafphp.dev/",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -31,11 +32,15 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
+        "php": "^8.2",
         "phpmailer/phpmailer": "^6.5"
     },
-    "extra": {
-        "branch-alias": {
-            "dev-v5.x": "5.0.x-dev"
+    "require-dev": {
+        "pestphp/pest": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     }
 }

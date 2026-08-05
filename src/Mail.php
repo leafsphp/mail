@@ -11,8 +11,16 @@ class Mail
 
     public function __construct($mail = null)
     {
+        $attachments = $mail['attachments'] ?? null;
         unset($mail['attachments']);
+
         $this->mail = $mail;
+
+        // attachments need normalizing (path/name/encoding/...), so array
+        // input is routed through attach() instead of being dropped
+        if ($attachments) {
+            $this->attach($attachments);
+        }
     }
 
     /**
@@ -97,5 +105,14 @@ class Mail
     public function send()
     {
         return Mailer::send($this);
+    }
+
+    /**
+     * Return errors from mail sending
+     * @return array
+     */
+    public function errors(): array
+    {
+        return Mailer::errors();
     }
 }

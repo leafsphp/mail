@@ -132,6 +132,10 @@ class Mailer
      */
     public static function send(Mail $mail)
     {
+        if (!static::$mailer) {
+            throw new \Exception('No mail server connection found. Call Mailer::connect() or mailer()->connect() before sending.');
+        }
+
         $debug = static::$config['debug'] ?? SMTP::DEBUG_OFF;
 
         if ($debug === "SERVER") {
@@ -179,9 +183,11 @@ class Mailer
                 $mail['senderName'] ?? static::$config['defaults']['senderName'] ?? ''
             );
 
-            if (!empty($mail['replyToEmail']) && !empty(static::$config['defaults']['replyToEmail'] ?? '')) {
+            $replyToEmail = $mail['replyToEmail'] ?? static::$config['defaults']['replyToEmail'] ?? '';
+
+            if (!empty($replyToEmail)) {
                 static::$mailer->addReplyTo(
-                    $mail['replyToEmail'] ?? static::$config['defaults']['replyToEmail'] ?? '',
+                    $replyToEmail,
                     $mail['replyToName'] ?? static::$config['defaults']['replyToName'] ?? ''
                 );
             }
@@ -199,11 +205,15 @@ class Mailer
             }
 
             if (!empty($mail['cc'])) {
-                static::$mailer->addCC($mail['cc']);
+                foreach ((array) $mail['cc'] as $cc) {
+                    static::$mailer->addCC($cc);
+                }
             }
 
             if (!empty($mail['bcc'])) {
-                static::$mailer->addBCC($mail['bcc']);
+                foreach ((array) $mail['bcc'] as $bcc) {
+                    static::$mailer->addBCC($bcc);
+                }
             }
 
             try {
@@ -221,10 +231,20 @@ class Mailer
 
                 return $res;
             } catch (Exception $e) {
+                ob_end_clean();
                 static::$errors[] = $e->getMessage();
             } catch (\Exception $e) {
+                ob_end_clean();
                 static::$errors[] = $e->getMessage();
+            } finally {
+                // the mailer is shared across sends: without a reset, mail 2
+                // also goes to mail 1's recipients (and carries its files)
+                static::$mailer->clearAllRecipients();
+                static::$mailer->clearAttachments();
+                static::$mailer->clearReplyTos();
             }
+
+            return false;
         }
     }
 
