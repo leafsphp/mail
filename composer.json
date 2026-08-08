@@ -36,11 +36,21 @@
         "phpmailer/phpmailer": "^6.5"
     },
     "require-dev": {
-        "pestphp/pest": "*"
+        "pestphp/pest": "*",
+        "leafs/alchemy": "v5.x-dev"
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
+    },
+    "scripts": {
+        "test": "@php vendor/bin/alchemy test",
+        "alchemy": "@php vendor/bin/alchemy all",
+        "lint": "@php vendor/bin/alchemy lint",
+        "fmt": "@php vendor/bin/alchemy fmt",
+        "refactor": "@php vendor/bin/alchemy refactor",
+        "analyse": "@php vendor/bin/alchemy analyse",
+        "ci": "@php vendor/bin/alchemy ci"
     }
 }
