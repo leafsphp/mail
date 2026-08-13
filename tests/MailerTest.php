@@ -114,8 +114,11 @@ describe('send happy path', function () {
             'replyToName' => 'Reply Person',
         ]));
 
-        expect($fake->lastSendState['replyTo'])->toHaveKey('reply@example.com');
-        expect($fake->lastSendState['replyTo']['reply@example.com'][1])->toBe('Reply Person');
+        // phpmailer 7 stores ReplyTo as a numeric list ([email, name] pairs),
+        // not the email-keyed map v6 used — assert entries, not array keys
+        expect(array_column($fake->lastSendState['replyTo'], 1, 0))
+            ->toHaveKey('reply@example.com')
+            ->and(array_column($fake->lastSendState['replyTo'], 1, 0)['reply@example.com'])->toBe('Reply Person');
     });
 
     test('replyTo added when only present in defaults', function () {
@@ -129,8 +132,9 @@ describe('send happy path', function () {
 
         Mailer::send(baseMail());
 
-        expect($fake->lastSendState['replyTo'])->toHaveKey('default-reply@example.com');
-        expect($fake->lastSendState['replyTo']['default-reply@example.com'][1])->toBe('Default Reply');
+        expect(array_column($fake->lastSendState['replyTo'], 1, 0))
+            ->toHaveKey('default-reply@example.com')
+            ->and(array_column($fake->lastSendState['replyTo'], 1, 0)['default-reply@example.com'])->toBe('Default Reply');
     });
 
     test('cc and bcc accept a single string', function () {

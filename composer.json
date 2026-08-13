@@ -33,11 +33,11 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.2",
-        "phpmailer/phpmailer": "^6.5"
+        "phpmailer/phpmailer": "^7.1"
     },
     "require-dev": {
         "pestphp/pest": "*",
-        "leafs/alchemy": "v5.x-dev"
+        "leafs/alchemy": "^5.0"
     },
     "config": {
         "allow-plugins": {
