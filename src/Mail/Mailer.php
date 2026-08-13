@@ -10,10 +10,10 @@ use PHPMailer\PHPMailer\SMTP;
 
 class Mailer
 {
-    /**@var array */
+    /** @var array */
     protected static $config = [];
 
-    /**@var \PHPMailer\PHPMailer\PHPMailer */
+    /** @var \PHPMailer\PHPMailer\PHPMailer */
     protected static $mailer;
 
     protected static $auth = 'SMTP';
@@ -138,7 +138,7 @@ class Mailer
 
         $debug = static::$config['debug'] ?? SMTP::DEBUG_OFF;
 
-        if ($debug === "SERVER") {
+        if ($debug === 'SERVER') {
             static::$mailer->SMTPDebug = SMTP::DEBUG_SERVER;
         } else {
             static::$mailer->SMTPDebug = $debug;

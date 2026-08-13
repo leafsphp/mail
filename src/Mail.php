@@ -6,7 +6,7 @@ use Leaf\Mail\Mailer;
 
 class Mail
 {
-    /**@var array */
+    /** @var array */
     protected $mail = [];
 
     public function __construct($mail = null)
@@ -71,10 +71,10 @@ class Mail
      */
     public function attach(
         $path,
-        $name = "",
+        $name = '',
         $encoding = \PHPMailer\PHPMailer\PHPMailer::ENCODING_BASE64,
-        $type = "",
-        $disposition = "attachment"
+        $type = '',
+        $disposition = 'attachment'
     ) {
         if (is_array($path)) {
             foreach ($path as $attachment) {
@@ -92,7 +92,7 @@ class Mail
                 'name' => $name,
                 'encoding' => $encoding,
                 'type' => $type,
-                'disposition' => $disposition
+                'disposition' => $disposition,
             ];
         }
 

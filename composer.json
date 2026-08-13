@@ -37,7 +37,8 @@
     },
     "require-dev": {
         "pestphp/pest": "*",
-        "leafs/alchemy": "^5.0"
+        "leafs/alchemy": "^5.0",
+        "friendsofphp/php-cs-fixer": "*"
     },
     "config": {
         "allow-plugins": {
