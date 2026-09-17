@@ -6,7 +6,6 @@ function setMailerStatic(string $property, $value): void
 {
     $ref = new ReflectionClass(\Leaf\Mail\Mailer::class);
     $prop = $ref->getProperty($property);
-    $prop->setAccessible(true);
     $prop->setValue(null, $value);
 }
 
@@ -14,7 +13,6 @@ function getMailerStatic(string $property)
 {
     $ref = new ReflectionClass(\Leaf\Mail\Mailer::class);
     $prop = $ref->getProperty($property);
-    $prop->setAccessible(true);
 
     return $prop->getValue();
 }
